@@ -63,15 +63,16 @@ module.exports = function (content, filename, scope, includeGlobals) {
   if (isBuffer(content)) {
     content = content.toString()
   }
-
+  
+  let result;
   // Evalutate the content with the given scope
   if (typeof content === 'string') {
     const stringScript = content.replace(/^\#\!.*/, '')
     const script = new vm.Script(stringScript, options)
-    script.runInNewContext(sandbox, options)
+    result = script.runInNewContext(sandbox, options)
   } else {
-    content.runInNewContext(sandbox, options)
+    result = content.runInNewContext(sandbox, options)
   }
 
-  return sandbox || sandbox.module.exports
+  return result || sandbox.module.exports
 }
