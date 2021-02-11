@@ -1,7 +1,5 @@
-var vm = require('vm')
-var isBuffer = Buffer.isBuffer
-
-var requireLike = require('require-like')
+const vm = require('vm')
+const isBuffer = Buffer.isBuffer
 
 function merge (a, b) {
   if (!a || !b) return a
@@ -30,9 +28,9 @@ module.exports = function (content, filename, scope, includeGlobals) {
   }
 
   // Expose standard Node globals
-  var sandbox = {}
-  var exports = {}
-  var _filename = filename || module.parent.filename;
+  const sandbox = {}
+  const exports = {}
+  const _filename = filename || module.parent.filename;
 
   if (includeGlobals) {
     merge(sandbox, global)
@@ -40,7 +38,7 @@ module.exports = function (content, filename, scope, includeGlobals) {
     sandbox.console = global.console
     // process is non-enumerable in node v12 and above
     sandbox.process = global.process
-    sandbox.require = requireLike(_filename)
+    sandbox.require = require
   }
 
   if (typeof scope === 'object') {
@@ -53,11 +51,11 @@ module.exports = function (content, filename, scope, includeGlobals) {
     filename: _filename,
     id: _filename,
     parent: module.parent,
-    require: sandbox.require || requireLike(_filename)
+    require: sandbox.require || require
   }
   sandbox.global = sandbox
 
-  var options = {
+  const options = {
     filename: filename,
     displayErrors: false
   }
@@ -68,12 +66,12 @@ module.exports = function (content, filename, scope, includeGlobals) {
 
   // Evalutate the content with the given scope
   if (typeof content === 'string') {
-    var stringScript = content.replace(/^\#\!.*/, '')
-    var script = new vm.Script(stringScript, options)
+    const stringScript = content.replace(/^\#\!.*/, '')
+    const script = new vm.Script(stringScript, options)
     script.runInNewContext(sandbox, options)
   } else {
     content.runInNewContext(sandbox, options)
   }
 
-  return sandbox.module.exports
+  return sandbox || sandbox.module.exports
 }
