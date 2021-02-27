@@ -39,6 +39,7 @@ module.exports = function (content, filename, scope, includeGlobals) {
     // process is non-enumerable in node v12 and above
     sandbox.process = global.process
     sandbox.require = require
+    sandbox.URL = URL
   }
 
   if (typeof scope === 'object') {
